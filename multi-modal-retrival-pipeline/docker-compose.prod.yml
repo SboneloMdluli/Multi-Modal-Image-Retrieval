@@ -1,0 +1,84 @@
+services:
+  kedro-run:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: multi-modal-indexing:${TAG:-latest}
+    user: "${USER_UID:-1000}:${USER_GID:-1000}"
+    volumes:
+      - type: bind
+        source: ./src
+        target: /app/src
+      - type: bind
+        source: ./conf
+        target: /app/conf
+      - type: bind
+        source: ./data/01_raw
+        target: /app/data/01_raw
+        read_only: true
+      - type: bind
+        source: ./data/02_intermediate
+        target: /app/data/02_intermediate
+      - type: bind
+        source: ./data/04_feature
+        target: /app/data/04_feature
+      - type: bind
+        source: ./data/06_models
+        target: /app/data/06_models
+      - type: bind
+        source: ./data/07_model_output
+        target: /app/data/07_model_output
+      - type: bind
+        source: ./logs
+        target: /app/logs
+    environment:
+      - KEDRO_ENV=production
+      - PYTHONPATH=/app/src
+      - HF_HOME=/home/kedro/.cache/huggingface
+      - HF_HUB_DOWNLOAD_TIMEOUT=500
+      - REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+        reservations:
+          memory: 4G
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    healthcheck:
+      test: ["CMD", "kedro", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - kedro-network
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
+networks:
+  kedro-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+
+volumes:
+  processed_data:
+    name: kedro_processed_data_${TAG:-latest}
+  feature_data:
+    name: kedro_feature_data_${TAG:-latest}
+  model_data:
+    name: kedro_model_data_${TAG:-latest}
+  output_data:
+    name: kedro_output_data_${TAG:-latest}
+  logs:
+    name: kedro_logs_${TAG:-latest}

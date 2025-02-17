@@ -1,0 +1,8 @@
+project: image_feature_store
+provider: local
+registry: ../multi-modal-retrival-feature-store/registry.db
+online_store:
+  path: ../multi-modal-retrival-feature-store/online_store.db
+offline_store:
+  type: file
+entity_key_serialization_version: 2

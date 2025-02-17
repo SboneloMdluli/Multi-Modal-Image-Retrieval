@@ -1,0 +1,30 @@
+services:
+  kedro-run:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: multi-modal-indexing:dev
+    user: "${USER_UID:-1000}:${USER_GID:-1000}"
+    volumes:
+      - .:/app
+      - ./data:/app/data
+      - ./logs:/app/logs
+    environment:
+      - KEDRO_ENV=local
+      - PYTHONPATH=/app/src
+    command: [ "kedro", "run" ]
+    healthcheck:
+      test: [ "CMD", "kedro", "--version" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+    networks:
+      - kedro-network
+
+networks:
+  kedro-network:
+    driver: bridge

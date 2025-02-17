@@ -1,0 +1,30 @@
+services:
+  feast-server:
+    build:
+      context: .
+      dockerfile: feast.Dockerfile
+    container_name: feast-server
+    volumes:
+      - ./data:/feast_feature_store/data
+      - ./logs:/feast_feature_store/logs
+      - ./feature_data:/feature_data
+    environment:
+      - PYTHONPATH=/feast_feature_store
+      - EMBEDDINGS_PATH=/feast_feature_store/feature_data/embeddings.pq
+    ports:
+      - "6566:6566"  # Default Feast server port
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os; assert os.path.exists('/feast_feature_store/data') and os.path.exists('/feast_feature_store/feature_data')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  feature_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/../data/04_feature

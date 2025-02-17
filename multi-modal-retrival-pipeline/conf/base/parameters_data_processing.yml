@@ -1,0 +1,2 @@
+image_embedding_params:
+  sequence_id: 0 # Starting ID for the image sequence

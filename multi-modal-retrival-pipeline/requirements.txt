@@ -1,0 +1,11 @@
+kedro~=0.19.11
+kedro-datasets[pandas-csvdataset, pandas-exceldataset, pandas-parquetdataset, plotly-plotlydataset, plotly-jsondataset, matplotlib-matplotlibwriter]>=3.0; python_version >= "3.9"
+kedro-telemetry>=0.3.1
+kedro-viz>=10.0.2
+pandas~=2.2.2
+pyarrow==14.0.1
+numpy~=1.26.4
+transformers~=4.48.3
+sentence-transformers~=3.4.1
+faiss-cpu~=1.7.4
+fastparquet~=2024.5.0

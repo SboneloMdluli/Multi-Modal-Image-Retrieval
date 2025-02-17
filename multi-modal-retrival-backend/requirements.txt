@@ -1,0 +1,8 @@
+fastapi>=0.109.0
+uvicorn>=0.27.0
+pydantic-core~=2.27.2
+pydantic-settings~=2.7.1
+python-dotenv>=1.0.0
+faiss-cpu~=1.7.4
+feast==0.45.0
+utils==1.0.2
