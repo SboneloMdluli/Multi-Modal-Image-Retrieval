@@ -1,0 +1,16 @@
+version: '3'
+services:
+  vue-app:
+    build:
+      context: .
+      target: development
+    ports:
+      - "3000:3000"  # Map to port 3000 for development
+    container_name: my-vue-app-container
+    volumes:
+      - .:/app  # Mount the current directory
+      - /app/node_modules  # Don't override node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true  # Enable hot reload
+    command: npm run serve  # Run in development mode
+    restart: unless-stopped
