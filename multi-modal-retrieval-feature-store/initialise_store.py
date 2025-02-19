@@ -1,5 +1,4 @@
 import subprocess
-import warnings
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -10,6 +9,7 @@ from feast import FeatureStore
 from utils import timing_decorator
 
 logger = logging_config.logger
+
 
 def run_command(command, description):
     """Run a shell command and log its description"""
