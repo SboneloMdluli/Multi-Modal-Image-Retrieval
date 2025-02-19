@@ -18,6 +18,7 @@
           v-model="searchQuery"
           placeholder="Describe the images you want to find..."
           class="search-input"
+          @keydown.enter.prevent="searchImages"
         ></textarea>
         <div class="count-container">
           <label for="image-count">Count:</label>
@@ -26,7 +27,8 @@
             type="number"
             v-model="imageCount"
             min="1"
-            max="10"
+            max="100"
+            step="1"
             class="number-input"
             @change="handleCountChange"
           >
@@ -57,8 +59,13 @@ export default {
   methods: {
     handleCountChange() {
       // Ensure imageCount stays within bounds
-      if (this.imageCount < 1) this.imageCount = 1;
-      if (this.imageCount > 10) this.imageCount = 10;
+      if (this.imageCount < 1) {
+        this.imageCount = 1;
+      } else if (this.imageCount > 100) {
+        this.imageCount = 100;
+      }
+      // Convert to integer to handle decimal inputs
+      this.imageCount = Math.floor(Number(this.imageCount));
     },
     async searchImages() {
       console.log('searchImages called with:', {
@@ -70,7 +77,7 @@ export default {
       this.error = null;
 
       try {
-        const url = `http://127.0.0.1:8000/api/v1/features/features/search?query=${encodeURIComponent(this.searchQuery)}&k=${this.imageCount}`;
+        const url = `http://127.0.0.1:8000/api/v1/features/search?query=${encodeURIComponent(this.searchQuery)}&k=${this.imageCount}`;
         console.log('Making API request to:', url);
 
         const response = await fetch(url);

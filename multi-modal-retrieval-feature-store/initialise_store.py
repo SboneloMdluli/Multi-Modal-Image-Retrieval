@@ -1,4 +1,5 @@
 import subprocess
+import warnings
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -9,7 +10,6 @@ from feast import FeatureStore
 from utils import timing_decorator
 
 logger = logging_config.logger
-
 
 def run_command(command, description):
     """Run a shell command and log its description"""
@@ -41,7 +41,7 @@ def prepare_data():
 
     try:
         # Read embeddings from the mounted feature_data directory
-        df = pd.read_parquet("feature_data/embeddings.pq")
+        df = pd.read_parquet("feature_data/embeddings.pq", engine="pyarrow")
         logger.info(f"Found {len(df)} records in embeddings file")
 
         # Prepare data for Feast

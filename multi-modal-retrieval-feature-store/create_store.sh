@@ -10,7 +10,7 @@ log_message() {
 
 log_message "Setting up feature store..."
 mkdir -p feature_data
-cp "../multi-modal-retrival-pipeline/data/04_feature/embeddings.pq" "feature_data/embeddings.pq"
+cp "../multi-modal-retrieval-pipeline/data/04_feature/embeddings.pq" "feature_data/embeddings.pq"
 
 # Install requirements
 log_message "Installing requirements..."

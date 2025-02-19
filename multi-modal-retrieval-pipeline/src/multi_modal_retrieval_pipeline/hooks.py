@@ -2,7 +2,7 @@ import logging
 import logging.config
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 from kedro.framework.hooks import hook_impl
 from kedro.pipeline.node import Node
@@ -44,7 +44,7 @@ class PipelineLoggingHook:
                 },
             },
             "loggers": {
-                "multi_modal_retrival_pipeline": {
+                "multi_modal_retrieval_pipeline": {
                     "level": "INFO",
                     "handlers": ["console", "file"],
                     "propagate": False,
@@ -63,7 +63,7 @@ class PipelineLoggingHook:
 
     @hook_impl
     def after_node_run(
-        self, node: Node, inputs: Dict[str, Any], outputs: Dict[str, Any]
+        self, node: Node, inputs: dict[str, Any], outputs: dict[str, Any]
     ) -> None:
         """Hook to be called after a node runs."""
         end_time = time.time()

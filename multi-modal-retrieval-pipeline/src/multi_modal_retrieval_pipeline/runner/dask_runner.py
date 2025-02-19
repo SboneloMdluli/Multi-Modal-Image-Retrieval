@@ -4,10 +4,11 @@ a Dask cluster, taking into account the inter-``Node`` dependencies.
 """
 import logging
 from collections import Counter
+from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import AbstractContextManager, contextmanager
 from itertools import chain
-from typing import Any, Dict, Iterator, Optional
+from typing import Any
 
 from distributed import Client, as_completed, worker_client
 from kedro.framework.hooks.manager import (
@@ -19,7 +20,7 @@ from kedro.framework.project import settings
 from kedro.io import AbstractDataset, DataCatalog
 from kedro.pipeline import Pipeline
 from kedro.pipeline.node import Node
-from kedro.runner import AbstractRunner, run_node
+from kedro.runner import AbstractRunner
 from pluggy import PluginManager
 
 logger = logging.getLogger(__name__)
@@ -51,14 +52,14 @@ class _DaskDataset(AbstractDataset):
     def _release(self) -> None:
         Client.current().unpublish_dataset(self._name)
 
-    def _describe(self) -> Dict[str, Any]:
+    def _describe(self) -> dict[str, Any]:
         return dict(name=self._name)
 
 
 class DaskRunner(AbstractRunner):
     """DaskRunner for distributed computation."""
 
-    def __init__(self, client_args: Dict[str, Any] = None, is_async: bool = False):
+    def __init__(self, client_args: dict[str, Any] = None, is_async: bool = False):
         """Initialize with Dask client arguments."""
         super().__init__(is_async=is_async)
         self._client_args = client_args or {}
@@ -179,7 +180,7 @@ class DaskRunner(AbstractRunner):
                     )
 
                 # Wait for batch completion and release memory
-                for i, (_, node) in enumerate(
+                for _, (_, node) in enumerate(
                     as_completed(batch_futures.values(), with_results=True)
                 ):
                     self._logger.info("Completed node: %s", node.name)
@@ -218,7 +219,7 @@ class DaskRunner(AbstractRunner):
 
     def run_only_missing(
         self, pipeline: Pipeline, catalog: DataCatalog
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Run only the missing outputs from the ``Pipeline`` using the
         datasets provided by ``catalog``, and save results back to the
         same objects.

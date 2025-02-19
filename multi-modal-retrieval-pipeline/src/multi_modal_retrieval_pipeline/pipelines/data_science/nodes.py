@@ -1,5 +1,6 @@
-from typing import Any
 import logging
+from typing import Any
+
 import faiss
 import numpy as np
 import pandas as pd

@@ -52,7 +52,7 @@ class APISettings(BaseSettings):
     project_description: str = Field(
         default="API for retrieving similar images based on text descriptions"
     )
-    api_v1_str: str = Field(default="/api/v1/features")
+    api_v1_str: str = Field(default="/api/v1")
 
     model_config = ConfigDict(
         env_prefix="API_",

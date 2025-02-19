@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 import faiss
 import uvicorn
-from app.api.v1.endpoints import query_feature_store
+from app.api.v1.endpoints import query_image_search
 from app.config.settings import get_api_settings, get_model_settings
 from app.core.logging_config import logger
 from fastapi import FastAPI
@@ -58,7 +58,7 @@ app.add_middleware(
 )
 
 
-app.include_router(query_feature_store.router, prefix=api_settings.api_v1_str)
+app.include_router(query_image_search.router, prefix=api_settings.api_v1_str)
 
 
 @app.get("/")

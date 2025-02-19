@@ -1,6 +1,6 @@
 import pytest
 from kedro.pipeline import Pipeline
-from multi_modal_retrival_pipeline.pipelines.data_processing.pipeline import (
+from multi_modal_retrieval_pipeline.pipelines.data_processing.pipeline import (
     create_pipeline,
 )
 
@@ -23,25 +23,33 @@ def test_pipeline_structure():
     # Test node properties
     node = pipeline.nodes[0]
     assert node.name == "generate_embeddings", "Node should have correct name"
-    assert node.inputs == (["partitioned_images"]), "Node should have correct input"
-    assert node.outputs == (["embeddings"]), "Node should have correct output"
+    assert node.inputs == [
+        "partitioned_images",
+        "params:image_embedding_params",
+    ], "Node should have correct input"
+    assert node.outputs == ["embeddings"], "Node should have correct output"
 
 
 @pytest.mark.cov
 def test_pipeline_inputs_outputs():
     """Test pipeline inputs and outputs."""
     pipeline = create_pipeline()
+    PIPELINE_INPUTS = 2
+    PIPELINE_OUTPUTS = 1
 
     # Test pipeline inputs
     inputs = pipeline.inputs()
-    assert len(inputs) == 1, "Pipeline should have one input"
+    assert len(inputs) == PIPELINE_INPUTS, "Pipeline should have two inputs"
     assert (
         "partitioned_images" in inputs
     ), "Pipeline should require partitioned_images as input"
+    assert (
+        "params:image_embedding_params" in inputs
+    ), "Pipeline should require image_embedding_params as parameter input"
 
     # Test pipeline outputs
     outputs = pipeline.outputs()
-    assert len(outputs) == 1, "Pipeline should have one output"
+    assert len(outputs) == PIPELINE_OUTPUTS, "Pipeline should have one output"
     assert "embeddings" in outputs, "Pipeline should produce embeddings as output"
 
 

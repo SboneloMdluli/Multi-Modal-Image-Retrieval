@@ -22,7 +22,6 @@ if TYPE_CHECKING:
 from kedro import __version__ as version
 from kedro.framework.cli import BRIGHT_BLACK, ORANGE
 from kedro.framework.cli.hooks import get_cli_hook_manager
-from kedro.framework.cli.project import run
 from kedro.framework.cli.utils import (
     CONTEXT_SETTINGS,
     ENTRY_POINT_GROUPS,

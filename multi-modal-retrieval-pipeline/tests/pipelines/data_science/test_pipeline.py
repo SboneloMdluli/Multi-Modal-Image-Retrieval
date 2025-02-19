@@ -1,6 +1,6 @@
 import pytest
 from kedro.pipeline import Pipeline
-from multi_modal_retrival_pipeline.pipelines.data_science.pipeline import (
+from multi_modal_retrieval_pipeline.pipelines.data_science.pipeline import (
     create_pipeline,
 )
 
@@ -27,7 +27,6 @@ def test_pipeline_structure():
     assert node.outputs == (["vector_store"]), "Node should have correct output"
 
 
-@pytest.mark.cov
 def test_pipeline_inputs_outputs():
     """Test pipeline inputs and outputs."""
     pipeline = create_pipeline()

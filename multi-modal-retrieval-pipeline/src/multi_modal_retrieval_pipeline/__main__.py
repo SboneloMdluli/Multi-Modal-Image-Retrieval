@@ -1,5 +1,5 @@
-"""multi-modal-Retrieval-pipeline file for ensuring the package is executable
-as `multi-modal-Retrieval-pipeline` and `python -m multi_modal_retrival_pipeline`
+"""multi-modal-retrieval-pipeline file for ensuring the package is executable
+as `multi-modal-retrieval-pipeline` and `python -m multi_modal_retrieval_pipeline`
 """
 import sys
 from pathlib import Path

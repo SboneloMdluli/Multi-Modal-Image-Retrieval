@@ -10,10 +10,11 @@ partitioned_images:
     kedro-viz:
       layer: raw
 
+vector_store:
+  type: multi_modal_retrieval_pipeline.io.faiss_dataset.FaissDataset
+  filepath: data/06_models/faiss_index.idx
+#  is_versioned: false
+
 embeddings:
   type: pandas.ParquetDataset
   filepath: data/04_feature/embeddings.pq
-
-vector_store:
-  type: multi_modal_retrival_pipeline.io.faiss_dataset.FaissDataset
-  filepath: data/06_models/faiss_index.idx
