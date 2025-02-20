@@ -16,7 +16,7 @@ The Multi Modal Retrieval System is designed to search and retrieve information 
 
 
 ## Prerequisites
-- Python 3.9+
+- Python 3.11
 - Docker
 - Virtual environment
 
