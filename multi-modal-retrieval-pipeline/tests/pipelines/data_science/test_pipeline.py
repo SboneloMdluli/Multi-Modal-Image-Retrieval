@@ -1,5 +1,11 @@
+import faiss
+import numpy as np
+import pandas as pd
 import pytest
 from kedro.pipeline import Pipeline
+from multi_modal_retrieval_pipeline.pipelines.data_science.nodes import (
+    create_faiss_index,
+)
 from multi_modal_retrieval_pipeline.pipelines.data_science.pipeline import (
     create_pipeline,
 )
@@ -50,3 +56,45 @@ def test_pipeline_empty_kwargs():
     assert (
         pipeline.nodes == pipeline_with_kwargs.nodes
     ), "Pipeline should be the same regardless of kwargs"
+
+
+@pytest.fixture
+def sample_embeddings_df():
+    # Create sample embeddings
+    n_samples = 5
+    embedding_dim = 10
+    embeddings = [
+        np.random.rand(embedding_dim).astype(np.float32) for _ in range(n_samples)
+    ]
+
+    return pd.DataFrame({"embedding": embeddings, "image_id": range(n_samples)})
+
+
+def test_create_faiss_index(sample_embeddings_df):
+    # Test index creation
+    index = create_faiss_index(sample_embeddings_df)
+
+    # Check if the index is of correct type
+    assert isinstance(index, faiss.IndexIDMap)
+
+    # Check if the index contains correct number of vectors
+    assert index.ntotal == len(sample_embeddings_df)
+
+    # Test search functionality
+    # Create a random query vector
+    query = np.random.rand(
+        1, sample_embeddings_df["embedding"].iloc[0].shape[0]
+    ).astype(np.float32)
+    distance, indices = index.search(query, k=1)
+
+    # Check if search returns expected number of results
+    assert len(distance[0]) == 1
+    assert 0 <= distance[0][0] < len(sample_embeddings_df)
+
+
+def test_create_faiss_index_empty_df():
+    # Test with empty DataFrame
+    empty_df = pd.DataFrame(columns=["embedding"])
+
+    with pytest.raises(Exception):
+        create_faiss_index(empty_df)

@@ -15,7 +15,9 @@ from kedro.framework.startup import bootstrap_project
 
 class TestKedroRun:
     def test_kedro_run(self):
-        bootstrap_project(Path.cwd())
+        # Get the project root directory (2 levels up from the test file)
+        project_path = Path(__file__).parent.parent
+        bootstrap_project(project_path)
 
-        with KedroSession.create(project_path=Path.cwd()) as session:
+        with KedroSession.create(project_path=project_path) as session:
             assert session.run() is not None

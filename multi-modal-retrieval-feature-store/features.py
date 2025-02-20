@@ -5,13 +5,13 @@ from feast.infra.offline_stores.file_source import FileSource
 from feast.types import Array, Bytes, Float32, Int64, String
 from feast.value_type import ValueType
 
-# Define the data source
+# Define the data source (offline)
 image_data_source = FileSource(
     path="data/image_features.pq",
     timestamp_field="event_timestamp",
 )
 
-# Single simplified entity
+# Single image entity
 image = Entity(
     name="image_id",
     join_keys=["image_id"],

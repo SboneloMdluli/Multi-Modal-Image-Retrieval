@@ -16,8 +16,8 @@ cp "../multi-modal-retrieval-pipeline/data/04_feature/embeddings.pq" "feature_da
 log_message "Installing requirements..."
 pip install -r requirements.txt
 
-# Initialize feature store
-log_message "Initializing feature store..."
+# Initialiee feature store
+log_message "Initialising feature store..."
 
 # Get the absolute path of the current directory
 CURRENT_DIR=$(pwd)
@@ -29,14 +29,14 @@ export PYTHONPATH="${PROJECT_ROOT}:${CURRENT_DIR}:${PYTHONPATH:-}"
 # Unset VIRTUAL_ENV to ensure we're not trying to use any virtual environment
 unset VIRTUAL_ENV
 
-# Run the initialization script (which includes feast apply)
-log_message "Running initialization script..."
+
+log_message "Running initialisation script..."
 python3 initialise_store.py
 
 if [ $? -eq 0 ]; then
-    log_message "Feature store initialization successful!"
+    log_message "Feature store initialisation successful!"
 else
-    log_message "Error: Feature store initialization failed"
+    log_message "Error: Feature store initialisation failed"
     exit 1
 fi
 

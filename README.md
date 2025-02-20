@@ -2,20 +2,23 @@
 
 ## System Overview
 
-The Multi Modal Retrieval System is designed to search and retrieve information images matching text query using advanced machine learning techniques.
+The Multi Modal Retrieval System is designed to search and retrieve information from images and return top k images matching text queries.
 
 ## Key Features
 
 - Multi-modal data processing
 - CLIP for embeddings and faiss for similarity search.
+- Modular pipeline architecture with Kedro
 - Distributed computing with Dask
 - Feature store integration with Feast
 - RESTful API endpoints with FastAPI
-- Modular pipeline architecture with Kedro
+- Vue frontend
+
 
 ## Prerequisites
 - Python 3.9+
 - Docker
+- Virtual environment
 
 ## Steps to run project
 
@@ -26,7 +29,7 @@ The Multi Modal Retrieval System is designed to search and retrieve information 
 
 ## [Kedro Pipeline](multi-modal-retrieval-pipeline)
 > [!IMPORTANT]
-Before you run the pipeline the data to passed through should be put in the ***multi-modal-retrieval-pipeline/data/01_raw***
+Before you run the pipeline the image data to be passed through should be put in the ***multi-modal-retrieval-pipeline/data/01_raw***
 
 To the pipeline project you should the below command which will install the necessary packages and run the pipeline automatically
 ```bash
@@ -34,19 +37,29 @@ To the pipeline project you should the below command which will install the nece
  sh run_pipeline.sh
 ```
 
+The pipeline tests are run using
+```bash
+cd multi-modal-retrieval-pipeline
+pytest tests/test_run.py
+```
+
+
 To visualise the pipeline run
 ```bash
+cd multi-modal-retrieval-pipeline
 kedro viz
 ```
 
 To run the Kedro pipeline (interactive)
 ```bash
+cd multi-modal-retrieval-pipeline
 kedro run --async
 ```
 ### Dask (Optional)
 
 Run Kedro pipeline with Dask
 ```bash
+cd multi-modal-retrieval-pipeline
 kedro run --runner=multi_modal_retrieval_pipeline.runner.DaskRunner
 ```
 Monitor your Dask tasks at if you are using Dask:
@@ -76,8 +89,10 @@ You may see DeprecationWarning which are from feast internal implementation and 
 To view the feast the store its attributes through a ui use
 
 ```bash
+cd multi-modal-retrieval-feature-store
 feast ui
 ```
+ Access http://0.0.0.0:8888 to view the store.
 
 ## [FastAPI Backend](multi-modal-retrieval-backend)
 
@@ -98,12 +113,3 @@ cd multi-modal-retrieval-frontend
 sh run_frontend.sh
 ```
 You can access Vue app on  http://localhost:3000/
-
-
-## Testing
-
-Run tests using pytest:
-
-```bash
-pytest
-```

@@ -32,9 +32,9 @@ docker-compose down -v &>/dev/null || true
 docker-compose up --build -d
 
 # Initialize feature store
-log_message "Initializing feature store..."
+log_message "Initialising feature store..."
 if ! docker-compose exec -T feast-server python initialise_store.py; then
-    log_message "Error: Feature store initialization failed"
+    log_message "Error: Feature store initialisation failed"
     docker-compose logs feast-server
     docker-compose down
     exit 1

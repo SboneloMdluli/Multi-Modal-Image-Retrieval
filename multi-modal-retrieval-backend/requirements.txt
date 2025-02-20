@@ -7,5 +7,5 @@ feast==0.45.0
 utils==1.0.2
 transformers~=4.48.3
 sentence-transformers~=3.4.1
-faiss-cpu~=1.7.4
+faiss-cpu~=1.9.0
 fastparquet~=2024.5.0

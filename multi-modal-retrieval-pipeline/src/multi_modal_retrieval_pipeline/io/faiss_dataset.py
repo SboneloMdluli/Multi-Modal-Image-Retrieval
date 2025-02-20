@@ -14,7 +14,7 @@ class FaissDataset(AbstractDataset[tuple[np.ndarray, int], faiss.Index]):
         >>> FaissDataset(
         >>>     filepath="data/04_feature/file.index",
         >>>     version=None,  # Latest version
-        >>>     versioned=True
+        >>>     is_versioned=True
         >>> )
     """
 
