@@ -76,7 +76,7 @@ vector_store:
 ```
 
 ## [Feast Feature Store](multi-modal-retrieval-feature-store)
-After running the Kedro pipeline run the following commands in order to create the store and push features.
+After running the Kedro pipeline you can run the following commands in order to create the store and push features. Before doing that you must source your virtual env again.
 ```bash
 cd multi-modal-retrieval-feature-store
 sh create_store.sh
@@ -96,7 +96,7 @@ feast ui
 
 ## [FastAPI Backend](multi-modal-retrieval-backend)
 
-To start the backend run the following. The command will install the required packages and the server.
+To start the backend run the following. The command will install the required packages and the server. Before doing that you must source your virtual env again.
 
 ```bash
 cd multi-modal-retrieval-backend
@@ -106,10 +106,11 @@ You can access the API on this address http://0.0.0.0:8000/docs#/
 
 ## [Vue Frontend](multi-modal-retrieval-backend)
 
-The following commands will start up a docker container running the Vue app. Both the backend and frontend should be run at the sametime.
+The following commands will start up a docker container running the Vue app. Both the backend and frontend should be run at the sametime. 
 
 ```bash
 cd multi-modal-retrieval-frontend
 sh run_frontend.sh
 ```
 You can access Vue app on  http://localhost:3000/
+remeber to delete the image after shuting down the container. 
