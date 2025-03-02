@@ -14,6 +14,7 @@ mkdir -p logs
 
 # Install main project requirements
 log_message "Installing main project requirements..."
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 
 # Run Kedro pipeline

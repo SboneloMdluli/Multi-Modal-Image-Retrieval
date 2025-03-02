@@ -57,9 +57,7 @@ class SearchService:
             features = self.feast_service.get_online_features(image_ids)
 
             results = []
-            for i, (distance, image_data) in enumerate(
-                zip(distances, features["image_data"])
-            ):
+            for distance, image_data in zip(distances, features["image_data"]):
                 if image_data:
                     # Convert image to base64
                     base64_image = base64.b64encode(image_data).decode("utf-8")

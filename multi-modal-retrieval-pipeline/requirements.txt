@@ -3,10 +3,12 @@ kedro-datasets[pandas-parquetdataset]>=3.0; python_version >= "3.9"
 kedro-telemetry>=0.3.1
 kedro-viz>=10.0.2
 pandas~=2.2.2
-pyarrow==14.0.1
 numpy~=1.26.4
 transformers~=4.48.3
 sentence-transformers~=3.4.1
 faiss-cpu~=1.9.0
 fastparquet~=2024.5.0
 distributed~=2024.12.1
+bokeh>=3.1.0
+pytest~=8.3.3
+pytest-cov~=4.1.0

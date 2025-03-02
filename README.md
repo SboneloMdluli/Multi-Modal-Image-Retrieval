@@ -31,7 +31,7 @@ The Multi Modal Retrieval System is designed to search and retrieve information 
 > [!IMPORTANT]
 Before you run the pipeline the image data to be passed through should be put in the ***multi-modal-retrieval-pipeline/data/01_raw***
 
-To the pipeline project you should the below command which will install the necessary packages and run the pipeline automatically
+To the pipeline project you should the below command, which will install the necessary packages and run the pipeline automatically
 ```bash
  cd multi-modal-retrieval-pipeline
  sh run_pipeline.sh
@@ -76,14 +76,14 @@ vector_store:
 ```
 
 ## [Feast Feature Store](multi-modal-retrieval-feature-store)
-After running the Kedro pipeline run the following commands in order to create the store and push features.
+After running the Kedro pipeline run the following commands to create the store and push features.
 ```bash
 cd multi-modal-retrieval-feature-store
 sh create_store.sh
 ```
 
 > [!NOTE]
-You may see DeprecationWarning which are from feast internal implementation and one from  pd.read_parquet for Passing a BlockManager to DataFrame
+You may see DeprecationWarning, which are from feast internal implementation and one from  pd.read_parquet for Passing a BlockManager to DataFrame
 
 
 To view the feast the store its attributes through a ui use
