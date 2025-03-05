@@ -1,0 +1,5 @@
+outs:
+- md5: 41c0eefde2966700557253f1d8c1c13c
+  size: 43525823
+  hash: md5
+  path: embeddings.pq
