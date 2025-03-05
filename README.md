@@ -113,4 +113,4 @@ cd multi-modal-retrieval-frontend
 sh run_frontend.sh
 ```
 You can access Vue app on  http://localhost:3000/
-remeber to delete the image after shuting down the container. 
+remember to delete the image after shutting down the container. 
