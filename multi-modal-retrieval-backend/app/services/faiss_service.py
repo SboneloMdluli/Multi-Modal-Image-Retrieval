@@ -2,12 +2,12 @@ from typing import Tuple
 
 import numpy as np
 from app.core.logging_config import logger
-from sentence_transformers import SentenceTransformer
+from app.core.query_processor import QueryProcessor
 
 
 class FaissService:
     def __init__(self):
-        self.model = SentenceTransformer("clip-ViT-B-32")
+        self.query_processor = QueryProcessor()
 
     def search(self, index, query: str, top_k: int = 3) -> Tuple[str, np.ndarray]:
         """
@@ -22,8 +22,9 @@ class FaissService:
             Tuple containing the query and numpy array of similar indices
         """
         try:
-            query_features = self.model.encode(query)
-            query_features = query_features.astype(np.float32).reshape(1, -1)
+            query_embeddings = self.query_processor.get_text_embedding(query)
+
+            query_features = query_embeddings.astype(np.float32).reshape(1, -1)
 
             distances, indices = index.search(query_features, top_k)
 

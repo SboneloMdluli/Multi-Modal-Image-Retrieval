@@ -2,7 +2,6 @@ import base64
 from typing import List
 
 from app.core.logging_config import logger
-from app.core.query_processor import QueryProcessor
 from app.schemas.search import SearchResponse, SearchResult
 from app.services.faiss_service import FaissService
 from app.services.feast_service import FeastService
@@ -23,7 +22,6 @@ def _normalise_distances(distances: List[float]) -> List[float]:
 
 class SearchService:
     def __init__(self):
-        self.query_processor = QueryProcessor()
         self.faiss_service = FaissService()
         self.feast_service = FeastService()
 
