@@ -106,11 +106,11 @@ You can access the API on this address http://0.0.0.0:8000/docs#/
 
 ## [Vue Frontend](multi-modal-retrieval-backend)
 
-The following commands will start up a docker container running the Vue app. Both the backend and frontend should be run at the sametime. 
+The following commands will start up a docker container running the Vue app. Both the backend and frontend should be run at the sametime.
 
 ```bash
 cd multi-modal-retrieval-frontend
 sh run_frontend.sh
 ```
 You can access Vue app on  http://localhost:3000/
-remember to delete the image after shutting down the container. 
+remember to delete the image after shutting down the container.

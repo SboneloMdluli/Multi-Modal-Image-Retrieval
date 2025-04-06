@@ -44,7 +44,6 @@ def prepare_data():
         df = pd.read_parquet("feature_data/embeddings.pq", engine="pyarrow")
         logger.info(f"Found {len(df)} records in embeddings file")
 
-        # Prepare data for Feast
         feast_df = pd.DataFrame(
             {
                 "image_id": df["image_id"],
@@ -74,17 +73,6 @@ def prepare_data():
 
 def initialize_store():
     """Initialize and populate the feature store"""
-
-    # Create data directory
-    Path("data").mkdir(parents=True, exist_ok=True)
-
-    # Clean up existing data
-    clean_feast_data()
-
-    # Prepare the data
-    if not prepare_data():
-        logger.error("Failed to prepare data")
-        return
 
     try:
         # Apply feature definitions

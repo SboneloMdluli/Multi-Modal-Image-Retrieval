@@ -8,6 +8,7 @@ class SearchResult(BaseModel):
 
     image_data: str
     similarity: float = Field(ge=0.0, le=1.0)
+    caption: str
 
 
 class SearchResponse(BaseModel):

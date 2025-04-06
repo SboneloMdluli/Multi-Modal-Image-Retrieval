@@ -1,14 +1,7 @@
 project: image_feature_store
-project_description: |
-    Image Feature Store for Multi-Modal Retrieval System
-
-    This Feast project manages image embeddings and features for similarity search:
-    - Stores image embeddings generated from deep learning models
-    - Manages feature views for efficient image retrieval
-    - Supports online and offline feature serving
-    - Integrates with FAISS for similarity search
-
+# By default, the registry is a file (but can be turned into a more scalable SQL-backed registry)
 registry: data/registry.db
+# The provider primarily specifies default offline / online stores & storing the registry in a given cloud
 provider: local
 online_store:
   type: sqlite
@@ -16,7 +9,12 @@ online_store:
 offline_store:
   type: file
 entity_key_serialization_version: 2
+# Enable feature descriptions and metadata for UI
+enable_feature_descriptions: true
+enable_feature_metadata: true
 
+# Project metadata
+project_description: "Image Feature Store for Multi-Modal Retrieval System .This Feast project manages image embeddings and features for similarity search"
 authors:
   - name: "Sbonelo Mdluli"
 version: "1.0.0"

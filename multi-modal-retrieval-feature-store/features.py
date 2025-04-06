@@ -1,9 +1,22 @@
 from datetime import timedelta
 
-from feast import Entity, FeatureService, FeatureView, Field
+from feast import Entity, FeatureService, FeatureView, Field, Project
 from feast.infra.offline_stores.file_source import FileSource
 from feast.types import Array, Bytes, Float32, Int64, String
 from feast.value_type import ValueType
+
+# Define a project for the feature repo with description
+project = Project(
+    name="image_feature_store",
+    description=(
+        "Image Feature Store for Multi-Modal Retrieval System. "
+        "This Feast project manages image embeddings and features for similarity search: "
+        "Stores image embeddings generated from deep learning models, "
+        "manages feature views for efficient image retrieval, supports online "
+        "and offline feature serving, "
+        "and integrates with FAISS for similarity search."
+    ),
+)
 
 # Define the data source (offline)
 image_data_source = FileSource(
@@ -27,12 +40,22 @@ image_features_view = FeatureView(
     ttl=timedelta(days=365),
     schema=[
         Field(name="image_id", dtype=Int64),
-        Field(name="image_data", dtype=Bytes),
-        Field(name="embedding", dtype=Array(Float32)),
-        Field(name="image_tag", dtype=String),
+        Field(name="image_data", dtype=Bytes, description="Raw image data bytes"),
+        Field(
+            name="embedding",
+            dtype=Array(Float32),
+            description="Image embedding vector for similarity search",
+        ),
+        Field(
+            name="image_tag",
+            dtype=String,
+            description="Tag/label associated with the image",
+        ),
     ],
     source=image_data_source,
     online=True,
+    tags={"domain": "computer_vision", "type": "features"},
+    description="Feature view containing image data, embeddings, and tags",
 )
 
 # Create a feature service

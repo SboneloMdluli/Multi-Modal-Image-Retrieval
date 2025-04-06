@@ -9,3 +9,6 @@ transformers~=4.48.3
 sentence-transformers~=3.4.1
 faiss-cpu~=1.9.0
 fastparquet~=2024.5.0
+torch>=2.0.0
+torchvision>=0.15.0
+accelerate>=0.26.0

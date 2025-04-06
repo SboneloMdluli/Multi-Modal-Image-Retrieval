@@ -1,11 +1,14 @@
 import base64
+from io import BytesIO
 from typing import List
 
 from app.core.logging_config import logger
 from app.schemas.search import SearchResponse, SearchResult
 from app.services.faiss_service import FaissService
 from app.services.feast_service import FeastService
+from app.services.image_service import ImageService
 from fastapi import HTTPException
+from PIL import Image
 
 
 def _normalise_distances(distances: List[float]) -> List[float]:
@@ -24,6 +27,7 @@ class SearchService:
     def __init__(self):
         self.faiss_service = FaissService()
         self.feast_service = FeastService()
+        self.image_service = ImageService()
 
     async def search_by_text(self, query: str, k: int, faiss_index) -> SearchResponse:
         logger.info(f"Processing text search request - Query: '{query}', k: {k}")
@@ -45,6 +49,10 @@ class SearchService:
             logger.error(f"Error in text search: {e}")
             raise
 
+    def base64_to_pil_image(self, image_bytes: bytes) -> Image.Image:
+        buffer = BytesIO(image_bytes)
+        return Image.open(buffer)
+
     async def _process_search(
         self, distances: List[float], indices: List[int]
     ) -> List[SearchResult]:
@@ -60,11 +68,12 @@ class SearchService:
                     # Convert image to base64
                     base64_image = base64.b64encode(image_data).decode("utf-8")
                     image_str = f"data:image/jpeg;base64,{base64_image}"
-
+                    image = self.base64_to_pil_image(image_data)
                     results.append(
                         SearchResult(
                             image_data=image_str,
                             similarity=float(0.2),  # Convert distance to similarity
+                            caption=self.image_service.get_caption(image),
                         )
                     )
 
