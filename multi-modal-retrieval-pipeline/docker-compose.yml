@@ -12,9 +12,9 @@ services:
     environment:
       - KEDRO_ENV=local
       - PYTHONPATH=/app/src
-    command: [ "kedro", "run" ]
+    command: ["kedro", "run"]
     healthcheck:
-      test: [ "CMD", "kedro", "--version" ]
+      test: ["CMD", "kedro", "--version"]
       interval: 30s
       timeout: 10s
       retries: 3

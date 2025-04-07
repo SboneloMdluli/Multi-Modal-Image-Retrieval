@@ -12,9 +12,15 @@ services:
       - PYTHONPATH=/feast_feature_store
       - EMBEDDINGS_PATH=/feast_feature_store/feature_data/embeddings.pq
     ports:
-      - "6566:6566"  # Default Feast server port
+      - "6566:6566" # Default Feast server port
     healthcheck:
-      test: ["CMD", "python", "-c", "import os; assert os.path.exists('/feast_feature_store/data') and os.path.exists('/feast_feature_store/feature_data')"]
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import os; assert os.path.exists('/feast_feature_store/data') and os.path.exists('/feast_feature_store/feature_data')",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5

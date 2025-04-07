@@ -12,9 +12,6 @@ project = Project(
         "Image Feature Store for Multi-Modal Retrieval System. "
         "This Feast project manages image embeddings and features for similarity search: "
         "Stores image embeddings generated from deep learning models, "
-        "manages feature views for efficient image retrieval, supports online "
-        "and offline feature serving, "
-        "and integrates with FAISS for similarity search."
     ),
 )
 
@@ -40,7 +37,9 @@ image_features_view = FeatureView(
     ttl=timedelta(days=365),
     schema=[
         Field(name="image_id", dtype=Int64),
-        Field(name="image_data", dtype=Bytes, description="Raw image data bytes"),
+        Field(
+            name="image_data", dtype=Bytes, description="Raw image data bytes"
+        ),
         Field(
             name="embedding",
             dtype=Array(Float32),

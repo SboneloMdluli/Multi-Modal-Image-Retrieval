@@ -11,12 +11,13 @@ def timing_decorator(func):
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
+        logger.info("Starting %s", func.__name__)
         start_time = time.time()
-        logger.info(f"Starting {func.__name__}")
         result = func(*args, **kwargs)
         end_time = time.time()
-        duration = end_time - start_time
-        logger.info(f"Completed {func.__name__} (took: {duration:.2f} seconds)")
+        logger.info(
+            "%s completed in %.2f seconds", func.__name__, end_time - start_time
+        )
         return result
 
     return wrapper

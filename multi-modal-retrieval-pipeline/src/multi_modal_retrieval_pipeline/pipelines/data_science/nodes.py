@@ -12,9 +12,11 @@ def create_faiss_index(data: pd.DataFrame) -> Any:
     """Create embeddings array and dimension for FAISS index.
 
     Args:
+    ----
         data: DataFrame containing 'embeddings' column
 
     Returns:
+    -------
        FAISS index
     """
     logger.info("Starting to create FAISS index")
@@ -34,12 +36,10 @@ def create_faiss_index(data: pd.DataFrame) -> Any:
         # Add vectors to the index with IDs
         index.add_with_ids(vectors, np.array(range(len(embeddings))))
 
-        logger.info(
-            f"Created FAISS index with {len(embeddings)} vectors of dimension {dimension}"
-        )
+        logger.info("Creating FAISS index with %d vectors", len(embeddings))
 
         return index
 
     except Exception as e:
-        logger.error(f"Error creating FAISS index: {e}")
+        logger.error("Error creating FAISS index: %s", str(e))
         raise

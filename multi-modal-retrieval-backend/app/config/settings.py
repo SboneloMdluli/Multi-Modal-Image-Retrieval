@@ -34,7 +34,7 @@ class FeatureStoreSettings(BaseSettings):
 
 class ModelSettings(BaseSettings):
     ml_models_registry: Path = Field(
-        default="../multi-modal-retrieval-pipeline/data/06_models"
+        default="../multi-modal-retrieval-pipeline/data/06_models",
     )
 
     @property
@@ -42,7 +42,10 @@ class ModelSettings(BaseSettings):
         return self.ml_models_registry / "faiss_index.idx"
 
     model_config = ConfigDict(
-        env_prefix="MODEL_", env_file=".env", env_file_encoding="utf-8", extra="allow"
+        env_prefix="MODEL_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="allow",
     )
 
 
@@ -50,7 +53,7 @@ class APISettings(BaseSettings):
     project_name: str = Field(default="Multi-Modal Image Retrieval API")
     project_version: str = Field(default="1.0.0")
     project_description: str = Field(
-        default="API for retrieving similar images based on text descriptions"
+        default="API for retrieving similar images based on text descriptions",
     )
     api_v1_str: str = Field(default="/api/v1")
 
@@ -62,16 +65,16 @@ class APISettings(BaseSettings):
     )
 
 
-@lru_cache()
+@lru_cache
 def get_feature_store_settings() -> FeatureStoreSettings:
     return FeatureStoreSettings()
 
 
-@lru_cache()
+@lru_cache
 def get_model_settings() -> ModelSettings:
     return ModelSettings()
 
 
-@lru_cache()
+@lru_cache
 def get_api_settings() -> APISettings:
     return APISettings()

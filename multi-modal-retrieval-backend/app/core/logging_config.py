@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 def setup_logging():
-    """Set up logging configuration for the backend application"""
+    """Set up logging configuration for the backend application."""
     # Create logs directory if it doesn't exist
     log_dir = Path("logs")
     log_dir.mkdir(exist_ok=True)

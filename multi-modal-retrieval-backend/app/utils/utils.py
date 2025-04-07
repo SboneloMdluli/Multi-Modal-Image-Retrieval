@@ -16,10 +16,12 @@ def timing_decorator(func):
             result = func(*args, **kwargs)
             end_time = time.time()
             duration = end_time - start_time
-            logger.info(f"Completed {func.__name__} (took: {duration:.2f} seconds)")
+            logger.info(
+                f"Completed {func.__name__} (took: {duration:.2f} seconds)",
+            )
             return result
         except Exception as e:
-            logger.error(f"Error in {func.__name__}: {str(e)}")
+            logger.error(f"Error in {func.__name__}: {e!s}")
             raise
 
     return wrapper
@@ -27,7 +29,7 @@ def timing_decorator(func):
 
 @timing_decorator
 def get_table_name():
-    """Get the correct table name from the database"""
+    """Get the correct table name from the database."""
     conn = sqlite3.connect("data/online_store.db")
     cursor = conn.cursor()
 
@@ -45,7 +47,7 @@ def get_table_name():
 
 
 def list_table_columns():
-    """List all tables and their column names in the database"""
+    """List all tables and their column names in the database."""
     conn = sqlite3.connect("data/online_store.db")
     cursor = conn.cursor()
 

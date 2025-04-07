@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import faiss
 import numpy as np
@@ -10,6 +10,7 @@ class FaissDataset(AbstractDataset[tuple[np.ndarray, int], faiss.Index]):
     """``FaissDataset`` loads and saves FAISS indexes with versioning support.
 
     Example:
+    -------
     ::
         >>> FaissDataset(
         >>>     filepath="data/04_feature/file.index",
@@ -21,12 +22,13 @@ class FaissDataset(AbstractDataset[tuple[np.ndarray, int], faiss.Index]):
     def __init__(
         self,
         filepath: str,
-        version: Optional[str] = None,
+        version: str | None = None,
         is_versioned: bool = False,
-    ):
+    ) -> None:
         """Creates a new instance of FaissDataset.
 
         Args:
+        ----
             filepath: The location of the index file
             version: If specified, should be an ISO-8601 formatted timestamp
                     (YYYY-MM-DDThh.mm.ss.sssZ)
@@ -48,7 +50,8 @@ class FaissDataset(AbstractDataset[tuple[np.ndarray, int], faiss.Index]):
         # If version is specified, use it
         if self._version:
             if self._version not in versions:
-                raise ValueError(f"Version '{self._version}' not found")
+                msg = f"Version '{self._version}' not found"
+                raise ValueError(msg)
             return self._get_versioned_path(self._version)
 
         # If no version specified, use latest
@@ -56,7 +59,8 @@ class FaissDataset(AbstractDataset[tuple[np.ndarray, int], faiss.Index]):
             latest_version = sorted(versions)[-1]
             return self._get_versioned_path(latest_version)
 
-        raise ValueError("No versions found for versioned dataset")
+        msg = "No versions found for versioned dataset"
+        raise ValueError(msg)
 
     def _get_save_path(self) -> Path:
         """Get the full path to save the index file."""
@@ -75,10 +79,7 @@ class FaissDataset(AbstractDataset[tuple[np.ndarray, int], faiss.Index]):
             import re
 
             match = re.search(r"'([^']*)'", str(version))
-            if match:
-                clean_version = match.group(1)
-            else:
-                clean_version = str(version)
+            clean_version = match.group(1) if match else str(version)
         else:
             clean_version = str(version)
 
@@ -103,7 +104,8 @@ class FaissDataset(AbstractDataset[tuple[np.ndarray, int], faiss.Index]):
             ]
             return sorted(versions)
         except Exception as e:
-            raise ValueError(f"Error listing versions: {e}")
+            msg = f"Error listing versions: {e}"
+            raise ValueError(msg)
 
     @staticmethod
     def _is_valid_version(version: str) -> bool:
@@ -126,24 +128,29 @@ class FaissDataset(AbstractDataset[tuple[np.ndarray, int], faiss.Index]):
     def _load(self) -> faiss.Index:
         """Loads the FAISS index.
 
-        Returns:
+        Returns
+        -------
             faiss.Index: Loaded FAISS index.
 
-        Raises:
+        Raises
+        ------
             ValueError: If the version doesn't exist or there are no versions.
         """
         load_path = self._get_load_path()
         if not load_path.exists():
-            raise ValueError(f"Index file not found at {load_path}")
+            msg = f"Index file not found at {load_path}"
+            raise ValueError(msg)
         return faiss.read_index(str(load_path))
 
     def _save(self, index: Any) -> None:
         """Saves the FAISS index.
 
         Args:
+        ----
             index: FAISS index to save
 
         Raises:
+        ------
             ValueError: If there's an error saving the index.
         """
         save_path = self._get_save_path()
@@ -154,7 +161,8 @@ class FaissDataset(AbstractDataset[tuple[np.ndarray, int], faiss.Index]):
         try:
             faiss.write_index(index, str(save_path))
         except Exception as e:
-            raise ValueError(f"Error saving index: {e}")
+            msg = f"Error saving index: {e}"
+            raise ValueError(msg)
 
     def _describe(self) -> dict[str, Any]:
         """Returns a dict that describes the attributes of the dataset."""
@@ -162,5 +170,7 @@ class FaissDataset(AbstractDataset[tuple[np.ndarray, int], faiss.Index]):
             "filepath": self._filepath,
             "versioned": self._versioned,
             "version": self._version,
-            "available_versions": self._get_versions() if self._versioned else None,
+            "available_versions": self._get_versions()
+            if self._versioned
+            else None,
         }

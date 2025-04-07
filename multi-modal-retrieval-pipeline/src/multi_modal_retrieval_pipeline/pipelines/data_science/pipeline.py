@@ -12,5 +12,5 @@ def create_pipeline(**kwargs) -> Pipeline:
                 outputs="vector_store",
                 name="create_faiss_index",
             ),
-        ]
+        ],
     )

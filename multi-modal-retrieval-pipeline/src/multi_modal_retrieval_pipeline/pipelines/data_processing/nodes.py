@@ -1,7 +1,8 @@
 import io
 import logging
 from collections import OrderedDict
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import pandas as pd
 from PIL import Image
@@ -14,9 +15,11 @@ def image_to_bytes(image: Image.Image) -> bytes:
     """Convert PIL Image to bytes.
 
     Args:
+    ----
         image: PIL Image object
 
     Returns:
+    -------
         bytes: Image encoded as bytes
     """
     img_byte_arr = io.BytesIO()
@@ -25,14 +28,17 @@ def image_to_bytes(image: Image.Image) -> bytes:
 
 
 def generate_clip_embeddings(
-    partitioned_images: OrderedDict[str, Callable[[], Any]], params: dict
+    partitioned_images: OrderedDict[str, Callable[[], Any]],
+    params: dict,
 ) -> pd.DataFrame:
     """Generate CLIP embeddings for a collection of images.
 
     Args:
+    ----
         partitioned_images: Dictionary mapping partition IDs to load functions
 
     Returns:
+    -------
         tuple: (list of embeddings, list of file paths)
         :param partitioned_images:
         :param params:
@@ -45,7 +51,7 @@ def generate_clip_embeddings(
     data = []
     current_id = params["sequence_id"]
 
-    logger.info(f"Starting to process {len(partitioned_images)} images")
+    logger.info("Processing %d images", len(partitioned_images))
     for partition_id, partition_load_func in partitioned_images.items():
         try:
             # Get the image data directly - this returns a PIL.Image object
@@ -64,14 +70,14 @@ def generate_clip_embeddings(
                     "embedding": embedding,
                     "image_data": serialized_image,
                     "image_tag": partition_id,
-                }
+                },
             )
 
             current_id += 1
 
         except Exception as e:
-            logger.error(f"Error processing image {partition_id}: {e}")
+            logger.error("Error processing image %s: %s", partition_id, str(e))
             continue
 
-    logger.info(f"Successfully processed {len(data)} images")
+    logger.info("Successfully processed %d images", len(data))
     return pd.DataFrame(data)

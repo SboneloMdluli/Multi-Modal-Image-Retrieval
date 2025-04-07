@@ -2,11 +2,12 @@ from contextlib import asynccontextmanager
 
 import faiss
 import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.api.v1.endpoints import query_image_search
 from app.config.settings import get_api_settings, get_model_settings
 from app.core.logging_config import logger
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
 api_settings = get_api_settings()
 model_settings = get_model_settings()
@@ -48,23 +49,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Add CORS middleware with proper configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Your Vue.js app URL
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
-
 app.include_router(query_image_search.router, prefix=api_settings.api_v1_str)
 
-
-@app.get("/")
-async def root() -> dict[str, str]:
-    return {"message": "Welcome to FastAPI Project"}
-
-
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=False)
+    uvicorn.run("main:app", workers=1, host="0.0.0.0", port=8000, reload=False)

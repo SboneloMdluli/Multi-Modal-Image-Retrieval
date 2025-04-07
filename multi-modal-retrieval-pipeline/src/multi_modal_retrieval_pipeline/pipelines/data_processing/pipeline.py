@@ -15,5 +15,5 @@ def create_pipeline(**kwargs) -> Pipeline:
                 outputs="embeddings",
                 name="generate_embeddings",
             ),
-        ]
+        ],
     )

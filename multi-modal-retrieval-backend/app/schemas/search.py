@@ -1,17 +1,15 @@
-from typing import List
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class SearchResult(BaseModel):
-    """Schema for a single search result"""
+    """Schema for a single search result."""
 
     image_data: str
-    similarity: float = Field(ge=0.0, le=1.0)
+    distance: float
     caption: str
 
 
 class SearchResponse(BaseModel):
-    """Schema for search response"""
+    """Schema for search response."""
 
-    results: List[SearchResult]
+    results: list[SearchResult]

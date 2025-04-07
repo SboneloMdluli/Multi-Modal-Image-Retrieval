@@ -2,6 +2,7 @@
 used to distribute execution of ``Node``s in the ``Pipeline`` across
 a Dask cluster, taking into account the inter-``Node`` dependencies.
 """
+
 import logging
 from collections import Counter
 from collections.abc import Iterator
@@ -28,9 +29,10 @@ logger = logging.getLogger(__name__)
 
 class _DaskDataset(AbstractDataset):
     """``_DaskDataset`` publishes/gets named datasets to/from the Dask
-    scheduler."""
+    scheduler.
+    """
 
-    def __init__(self, name: str):
+    def __init__(self, name: str) -> None:
         self._name = name
 
     def _load(self) -> Any:
@@ -53,25 +55,31 @@ class _DaskDataset(AbstractDataset):
         Client.current().unpublish_dataset(self._name)
 
     def _describe(self) -> dict[str, Any]:
-        return dict(name=self._name)
+        return {"name": self._name}
 
 
 class DaskRunner(AbstractRunner):
     """DaskRunner for distributed computation."""
 
-    def __init__(self, client_args: dict[str, Any] = None, is_async: bool = False):
+    def __init__(
+        self, client_args: dict[str, Any] | None = None, is_async: bool = False
+    ) -> None:
         """Initialize with Dask client arguments."""
         super().__init__(is_async=is_async)
         self._client_args = client_args or {}
         self._client = None
 
-    def _initialize_client(self):
+    def _initialize_client(self) -> None:
         """Initialize Dask client with error handling."""
         if self._client is None:
             try:
-                logger.info("Initializing Dask client with args: %s", self._client_args)
+                logger.info(
+                    "Initializing Dask client with args: %s", self._client_args
+                )
                 self._client = Client(**self._client_args)
-                logger.info("Dask client initialized successfully: %s", self._client)
+                logger.info(
+                    "Dask client initialized successfully: %s", self._client
+                )
             except Exception as e:
                 logger.error("Failed to initialize Dask client: %s", str(e))
                 raise
@@ -80,9 +88,11 @@ class DaskRunner(AbstractRunner):
         """Factory method for creating the default dataset for the runner.
 
         Args:
+        ----
             ds_name: Name of the missing dataset.
 
         Returns:
+        -------
             An instance of ``_DaskDataset`` to be used for all
             unregistered datasets.
         """
@@ -93,12 +103,13 @@ class DaskRunner(AbstractRunner):
         node: Node,
         catalog: DataCatalog,
         is_async: bool = False,
-        session_id: str = None,
+        session_id: str | None = None,
         *dependencies: Node,
     ) -> Node:
         """Run a single `Node` with inputs from and outputs to the `catalog`.
 
         Args:
+        ----
             node: The ``Node`` to run.
             catalog: A ``DataCatalog`` containing the node's inputs and outputs.
             is_async: If True, the node inputs and outputs are loaded and saved
@@ -108,11 +119,14 @@ class DaskRunner(AbstractRunner):
                 dependency tracking.
 
         Returns:
+        -------
             The node argument.
         """
         hook_manager = _create_hook_manager()
         _register_hooks(hook_manager, settings.HOOKS)
-        _register_hooks_entry_points(hook_manager, settings.DISABLE_HOOKS_FOR_PLUGINS)
+        _register_hooks_entry_points(
+            hook_manager, settings.DISABLE_HOOKS_FOR_PLUGINS
+        )
 
         # Load inputs in chunks to reduce memory usage
         inputs = {}
@@ -143,7 +157,7 @@ class DaskRunner(AbstractRunner):
         pipeline: Pipeline,
         catalog: DataCatalog,
         hook_manager: PluginManager,
-        session_id: str = None,
+        session_id: str | None = None,
     ) -> None:
         """Run the pipeline with Dask."""
         try:
@@ -181,7 +195,7 @@ class DaskRunner(AbstractRunner):
 
                 # Wait for batch completion and release memory
                 for _, (_, node) in enumerate(
-                    as_completed(batch_futures.values(), with_results=True)
+                    as_completed(batch_futures.values(), with_results=True),
                 ):
                     self._logger.info("Completed node: %s", node.name)
 
@@ -205,7 +219,7 @@ class DaskRunner(AbstractRunner):
 
                 # Force garbage collection after each batch
                 client.run_on_scheduler(
-                    lambda dask_scheduler: dask_scheduler.validate_state()
+                    lambda dask_scheduler: dask_scheduler.validate_state(),
                 )
 
         except Exception as e:
@@ -218,20 +232,26 @@ class DaskRunner(AbstractRunner):
                 self._client = None
 
     def run_only_missing(
-        self, pipeline: Pipeline, catalog: DataCatalog
+        self,
+        pipeline: Pipeline,
+        catalog: DataCatalog,
     ) -> dict[str, Any]:
         """Run only the missing outputs from the ``Pipeline`` using the
         datasets provided by ``catalog``, and save results back to the
         same objects.
 
         Args:
+        ----
             pipeline: The ``Pipeline`` to run.
             catalog: The ``DataCatalog`` from which to fetch data.
+
         Raises:
+        ------
             ValueError: Raised when ``Pipeline`` inputs cannot be
                 satisfied.
 
         Returns:
+        -------
             Any node outputs that cannot be processed by the
             ``DataCatalog``. These are returned in a dictionary, where
             the keys are defined by the node outputs.
@@ -239,8 +259,10 @@ class DaskRunner(AbstractRunner):
         free_outputs = pipeline.outputs() - set(catalog.list())
         missing = {ds for ds in catalog.list() if not catalog.exists(ds)}
         to_build = free_outputs | missing
-        to_rerun = pipeline.only_nodes_with_outputs(*to_build) + pipeline.from_inputs(
+        to_rerun = pipeline.only_nodes_with_outputs(
             *to_build
+        ) + pipeline.from_inputs(
+            *to_build,
         )
 
         # We also need any missing datasets that are required to run the
@@ -254,7 +276,7 @@ class DaskRunner(AbstractRunner):
             if not self.create_default_dataset(ds_name).exists()
         }
         output_to_unregistered = pipeline.only_nodes_with_outputs(
-            *missing_unregistered_ds
+            *missing_unregistered_ds,
         )
         input_from_unregistered = to_rerun.inputs() & missing_unregistered_ds
         to_rerun += output_to_unregistered.to_outputs(*input_from_unregistered)
@@ -271,7 +293,8 @@ class DaskRunner(AbstractRunner):
     def _get_executor(self) -> AbstractContextManager[ThreadPoolExecutor]:
         """Create a new ThreadPoolExecutor.
 
-        Returns:
+        Returns
+        -------
             ThreadPoolExecutor wrapped in a context manager.
         """
 

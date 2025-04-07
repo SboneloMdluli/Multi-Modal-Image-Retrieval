@@ -15,15 +15,15 @@ from multi_modal_retrieval_pipeline.pipelines.data_processing.pipeline import (
 from PIL import Image
 
 
-@pytest.mark.cov
-def test_pipeline_creation():
+@pytest.mark.cov()
+def test_pipeline_creation() -> None:
     """Test basic pipeline creation."""
     pipeline = create_pipeline()
     assert isinstance(pipeline, Pipeline), "Should create a Pipeline object"
 
 
-@pytest.mark.cov
-def test_pipeline_structure():
+@pytest.mark.cov()
+def test_pipeline_structure() -> None:
     """Test basic pipeline structure."""
     pipeline = create_pipeline()
 
@@ -40,8 +40,8 @@ def test_pipeline_structure():
     assert node.outputs == ["embeddings"], "Node should have correct output"
 
 
-@pytest.mark.cov
-def test_pipeline_inputs_outputs():
+@pytest.mark.cov()
+def test_pipeline_inputs_outputs() -> None:
     """Test pipeline inputs and outputs."""
     pipeline = create_pipeline()
     PIPELINE_INPUTS = 2
@@ -60,11 +60,13 @@ def test_pipeline_inputs_outputs():
     # Test pipeline outputs
     outputs = pipeline.outputs()
     assert len(outputs) == PIPELINE_OUTPUTS, "Pipeline should have one output"
-    assert "embeddings" in outputs, "Pipeline should produce embeddings as output"
+    assert (
+        "embeddings" in outputs
+    ), "Pipeline should produce embeddings as output"
 
 
-@pytest.mark.cov
-def test_pipeline_empty_kwargs():
+@pytest.mark.cov()
+def test_pipeline_empty_kwargs() -> None:
     """Test pipeline creation with empty kwargs."""
     pipeline = create_pipeline()
     pipeline_with_kwargs = create_pipeline(random_kwargs="test")
@@ -73,14 +75,13 @@ def test_pipeline_empty_kwargs():
     ), "Pipeline should be the same regardless of kwargs"
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_image():
     # Create a small test image
-    img = Image.new("RGB", (100, 100), color="red")
-    return img
+    return Image.new("RGB", (100, 100), color="red")
 
 
-@pytest.fixture
+@pytest.fixture()
 def sample_partitioned_images(sample_image):
     # Create a mock partitioned images dictionary
     def load_func():
@@ -90,11 +91,11 @@ def sample_partitioned_images(sample_image):
         {
             "test_image_1.jpg": load_func,
             "test_image_2.jpg": load_func,
-        }
+        },
     )
 
 
-def test_image_to_bytes(sample_image):
+def test_image_to_bytes(sample_image) -> None:
     # Test image conversion to bytes
     result = image_to_bytes(sample_image)
     assert isinstance(result, bytes)
@@ -105,7 +106,7 @@ def test_image_to_bytes(sample_image):
     assert img_from_bytes.size == sample_image.size
 
 
-def test_generate_clip_embeddings(sample_partitioned_images):
+def test_generate_clip_embeddings(sample_partitioned_images) -> None:
     params = {"sequence_id": 0}
     result_df = generate_clip_embeddings(sample_partitioned_images, params)
 
@@ -129,7 +130,11 @@ def test_generate_clip_embeddings(sample_partitioned_images):
     )
 
     # Check image data
-    assert all(isinstance(img_data, bytes) for img_data in result_df["image_data"])
+    assert all(
+        isinstance(img_data, bytes) for img_data in result_df["image_data"]
+    )
 
     # Check sequential IDs
-    assert list(result_df["image_id"]) == list(range(len(sample_partitioned_images)))
+    assert list(result_df["image_id"]) == list(
+        range(len(sample_partitioned_images))
+    )

@@ -25,8 +25,8 @@ class PipelineLoggingHook:
             "version": 1,
             "formatters": {
                 "simple": {
-                    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-                }
+                    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                },
             },
             "handlers": {
                 "console": {
@@ -48,7 +48,7 @@ class PipelineLoggingHook:
                     "level": "INFO",
                     "handlers": ["console", "file"],
                     "propagate": False,
-                }
+                },
             },
             "root": {"level": "INFO", "handlers": ["console", "file"]},
         }
@@ -59,11 +59,14 @@ class PipelineLoggingHook:
         """Hook to be called before a node runs."""
         self._timings[node.name] = time.time()
         logger = logging.getLogger(__name__)
-        logger.info(f"Starting execution of node: {node.name}")
+        logger.info("Node %s starting", node.name)
 
     @hook_impl
     def after_node_run(
-        self, node: Node, inputs: dict[str, Any], outputs: dict[str, Any]
+        self,
+        node: Node,
+        inputs: dict[str, Any],
+        outputs: dict[str, Any],
     ) -> None:
         """Hook to be called after a node runs."""
         end_time = time.time()
@@ -71,9 +74,7 @@ class PipelineLoggingHook:
         duration = end_time - start_time
 
         logger = logging.getLogger(__name__)
-        logger.info(
-            f"Finished execution of node: {node.name} " f"(took {duration:.2f} seconds)"
-        )
+        logger.info("Node %s completed in %.2f seconds", node.name, duration)
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._timings = {}

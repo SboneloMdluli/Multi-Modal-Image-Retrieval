@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def setup_logging():
-    """Set up logging configuration for Feast feature store"""
+    """Set up logging configuration for Feast feature store."""
     log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     date_format = "%Y-%m-%d %H:%M:%S"
 

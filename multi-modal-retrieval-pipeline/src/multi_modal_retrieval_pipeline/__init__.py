@@ -1,4 +1,3 @@
-"""multi-modal-retrieval-pipeline
-"""
+"""multi-modal-retrieval-pipeline."""
 
 __version__ = "0.1"

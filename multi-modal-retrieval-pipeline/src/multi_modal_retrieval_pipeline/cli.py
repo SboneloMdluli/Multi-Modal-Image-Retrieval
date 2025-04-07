@@ -58,7 +58,6 @@ def cli() -> None:  # pragma: no cover
     the command from the plugin will take precedence.
 
     """
-    pass
 
 
 @cli.command()
@@ -66,9 +65,7 @@ def info() -> None:
     """Get more information about kedro."""
     click.secho(LOGO, fg="green")
     click.echo(
-        "Kedro is a Python framework for\n"
-        "creating reproducible, maintainable\n"
-        "and modular data science code."
+        "Kedro is a Python framework for\ncreating reproducible, maintainable\nand modular data science code.",
     )
 
     plugin_versions = {}
@@ -85,7 +82,7 @@ def info() -> None:
         for plugin_name, plugin_version in sorted(plugin_versions.items()):
             entrypoints_str = ",".join(sorted(plugin_entry_points[plugin_name]))
             click.echo(
-                f"{plugin_name}: {plugin_version} (entry points:{entrypoints_str})"
+                f"{plugin_name}: {plugin_version} (entry points:{entrypoints_str})",
             )
     else:  # pragma: no cover
         click.echo("No plugins installed")
@@ -134,7 +131,7 @@ class KedroCLI(CommandCollection):
     loading.
     """
 
-    def __init__(self, project_path: Path):
+    def __init__(self, project_path: Path) -> None:
         self._metadata = None  # running in package mode
         if _is_project(project_path):
             self._metadata = bootstrap_project(project_path)
@@ -161,7 +158,8 @@ class KedroCLI(CommandCollection):
         # so we have to re-do it.
         args = sys.argv[1:] if args is None else list(args)
         self._cli_hook_manager.hook.before_command_run(
-            project_metadata=self._metadata, command_args=args
+            project_metadata=self._metadata,
+            command_args=args,
         )
 
         try:
@@ -177,13 +175,18 @@ class KedroCLI(CommandCollection):
 
         except SystemExit as exc:
             self._cli_hook_manager.hook.after_command_run(
-                project_metadata=self._metadata, command_args=args, exit_code=exc.code
+                project_metadata=self._metadata,
+                command_args=args,
+                exit_code=exc.code,
             )
 
             # When CLI is run outside of a project, project_groups are not registered
             catch_exception = "click.exceptions.UsageError: No such command"
             # click convert exception handles to error message
-            if catch_exception in traceback.format_exc() and not self.project_groups:
+            if (
+                catch_exception in traceback.format_exc()
+                and not self.project_groups
+            ):
                 warn = click.style(
                     "\nKedro project not found in this directory. ",
                     fg=ORANGE,
@@ -199,7 +202,8 @@ class KedroCLI(CommandCollection):
                 message = warn + result
                 hint = (
                     click.style(
-                        "\nHint: Kedro is looking for a file called ", fg=BRIGHT_BLACK
+                        "\nHint: Kedro is looking for a file called ",
+                        fg=BRIGHT_BLACK,
                     )
                     + click.style("'pyproject.toml", fg="magenta")
                     + click.style(
@@ -212,7 +216,9 @@ class KedroCLI(CommandCollection):
             sys.exit(exc.code)
         except Exception:
             self._cli_hook_manager.hook.after_command_run(
-                project_metadata=self._metadata, command_args=args, exit_code=1
+                project_metadata=self._metadata,
+                command_args=args,
+                exit_code=1,
             )
             raise
 
@@ -239,7 +245,9 @@ class KedroCLI(CommandCollection):
         plugins = load_entry_points("project")
 
         try:
-            project_cli = importlib.import_module(f"{self._metadata.package_name}.cli")
+            project_cli = importlib.import_module(
+                f"{self._metadata.package_name}.cli"
+            )
             # fail gracefully if cli.py does not exist
         except ModuleNotFoundError:
             # return only built-in commands and commands from plugins
@@ -248,8 +256,9 @@ class KedroCLI(CommandCollection):
 
         # fail badly if cli.py exists, but has no `cli` in it
         if not hasattr(project_cli, "cli"):
+            msg = f"Cannot load commands from {self._metadata.package_name}.cli"
             raise KedroCliError(
-                f"Cannot load commands from {self._metadata.package_name}.cli"
+                msg,
             )
         user_defined = project_cli.cli
         # return built-in commands, plugin commands and user defined commands
@@ -263,7 +272,7 @@ def main() -> None:  # pragma: no cover
     """
     _init_plugins()
     cli_collection = KedroCLI(
-        project_path=_find_kedro_project(Path.cwd()) or Path.cwd()
+        project_path=_find_kedro_project(Path.cwd()) or Path.cwd(),
     )
     cli_collection()
 
@@ -276,7 +285,7 @@ def main() -> None:  # pragma: no cover
     default="dask",
     help="Runner to use for pipeline execution.",
 )
-def dask(runner):
+def dask(runner) -> None:
     """Run the pipeline using Dask runner."""
     project_path = Path.cwd()
     logger.info("Starting Kedro project at: %s", project_path)
@@ -296,11 +305,11 @@ def dask(runner):
                 session.run(runner=runner)
                 logger.info("Pipeline execution completed successfully")
             except Exception as e:
-                logger.error("Pipeline execution failed: %s", str(e), exc_info=True)
+                logger.exception("Pipeline execution failed: %s", str(e))
                 raise
 
     except Exception as e:
-        logger.error("Failed to run Kedro project: %s", str(e), exc_info=True)
+        logger.exception("Failed to run Kedro project: %s", str(e))
         raise
 
 

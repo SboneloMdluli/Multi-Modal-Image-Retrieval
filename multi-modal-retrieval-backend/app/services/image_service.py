@@ -1,41 +1,72 @@
-import requests
 import torch
-from app.core.logging_config import logger
 from PIL import Image
-from transformers import AutoModelForCausalLM, AutoProcessor
+from transformers import (
+    AutoTokenizer,
+    VisionEncoderDecoderModel,
+    ViTImageProcessor,
+)
 
 
 class ImageService:
-    # GenerativeImage2Text Transformer - using a smaller model
-    model_reference = "nlpconnect/vit-gpt2-image-captioning"  # Smaller, more efficient model
+    _instance = None
 
-    # Initialize with a flag to track if model loading succeeded
-    model_loaded = False
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._initialized = False
+        return cls._instance
 
-    try:
-        processor = AutoProcessor.from_pretrained(model_reference)
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model = AutoModelForCausalLM.from_pretrained(model_reference).to(device)
-        model_loaded = True
-        logger.info(f"Successfully loaded image captioning model: {model_reference}")
-    except Exception as e:
-        logger.error(f"Failed to load image captioning model: {str(e)}")
-        processor = None
-        model = None
-        device = None
+    def __init__(self) -> None:
+        if self._initialized:
+            return
+        # TODO : find solution to multithread with pytorch-fastapi
+        torch.set_num_threads(1)  # Limit CPU threads
+        model_reference = "nlpconnect/vit-gpt2-image-captioning"
 
-    def get_caption(self, image) -> str:
+        self.device = torch.device(
+            "cuda" if torch.cuda.is_available() else "cpu",
+        )
 
+        self.feature_extractor = ViTImageProcessor.from_pretrained(
+            model_reference,
+        )
+        self.tokenizer = AutoTokenizer.from_pretrained(model_reference)
+        self.model = VisionEncoderDecoderModel.from_pretrained(
+            model_reference,
+        ).to(self.device)
+
+        # TODO : move config file
+        self.max_length = 50
+        self.num_beams = 4
+        self.gen_kwargs = {
+            "max_length": self.max_length,
+            "num_beams": self.num_beams,
+        }
+        self._initialized = True
+
+    def generate_caption(self, images: list[Image.Image]) -> list[str]:
         try:
-            inputs = ImageService.processor(images=image, return_tensors="pt").to(ImageService.device)
-            with torch.no_grad():
-                generated_ids = ImageService.model.generate(**inputs, max_length=20, num_beams=1, do_sample=False)
+            pixel_values = self.feature_extractor(
+                images=images,
+                return_tensors="pt",
+            ).pixel_values.to(self.device)
 
-            # Decode the generated tokens
-            caption = ImageService.processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
-            logger.info(f"Caption generated successfully: {caption}")
-            return caption
+            # Reduce memory usage
+            with torch.no_grad():
+                output_ids = self.model.generate(
+                    pixel_values,
+                    **self.gen_kwargs,
+                )
+
+            image_captions = self.tokenizer.batch_decode(
+                output_ids,
+                skip_special_tokens=True,
+            )
+            return [caption.strip() for caption in image_captions]
 
         except Exception as e:
-            logger.error(f"Error generating caption: {str(e)}")
-            return "Failed to generate caption"
+            return [f"Error generating caption: {e!s}"]
+        finally:
+            # Clean up any CUDA memory
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()

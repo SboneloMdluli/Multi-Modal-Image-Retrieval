@@ -1,16 +1,17 @@
-from typing import Any, Dict, List
+from typing import Any
+
+from feast import FeatureStore
 
 from app.config.settings import get_feature_store_settings
 from app.core.logging_config import logger
-from feast import FeatureStore
 
 
 class FeastService:
-    def __init__(self):
+    def __init__(self) -> None:
         settings = get_feature_store_settings()
         self.store = FeatureStore(str(settings.feature_store_path))
 
-    def get_online_features(self, image_ids: List[str]) -> Dict[str, Any]:
+    def get_online_features(self, image_ids: list[str]) -> dict[str, Any]:
         try:
             entity_rows = [{"image_id": image_id} for image_id in image_ids]
             features = self.store.get_online_features(

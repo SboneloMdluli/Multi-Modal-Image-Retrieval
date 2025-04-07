@@ -9,6 +9,9 @@
     <div class="image-grid">
       <div v-for="(image, index) in displayedImages" :key="index" class="image-card">
         <img :src="image.url" :alt="image.description" class="floating-image">
+        <div class="caption-container">
+          {{ image.caption }}
+        </div>
       </div>
     </div>
 
@@ -78,24 +81,27 @@ export default {
 
       try {
         const url = `http://127.0.0.1:8000/api/v1/features/search?query=${encodeURIComponent(this.searchQuery)}&k=${this.imageCount}`;
-        console.log('Making API request to:', url);
 
         const response = await fetch(url);
-        console.log('API response:', response);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
-        console.log('API data:', data);
+        if (!data.results || data.results.length === 0) {
+          throw new Error('No images found');
+        }
 
         this.images = data.results.map(item => ({
           url: item.image_data,
-          description: item.image_tag
+          description: item.image_tag,
+          caption: item.caption,
         }));
+
+        console.log('Processed images array:', this.images);
+
       } catch (err) {
-        console.error('API error:', err);
         this.error = `Error fetching images: ${err.message}`;
         this.images = [];
       } finally {
@@ -188,14 +194,18 @@ export default {
 
 .image-card {
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  border-radius: 12px;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+  transition: all 0.3s ease;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .image-card:hover {
   transform: translateY(-5px);
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 15px 25px 0px;
 }
 
 .floating-image {
@@ -203,6 +213,22 @@ export default {
   height: 300px;
   object-fit: cover;
   display: block;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.caption-container {
+  padding: 1.2rem;
+  color: #ECF0F1;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  background-color: #34495E;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  min-height: 80px;
+  text-align: center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .error-message {

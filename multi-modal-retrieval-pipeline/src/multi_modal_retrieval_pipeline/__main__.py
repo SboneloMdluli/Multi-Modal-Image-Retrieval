@@ -1,6 +1,7 @@
 """multi-modal-retrieval-pipeline file for ensuring the package is executable
-as `multi-modal-retrieval-pipeline` and `python -m multi_modal_retrieval_pipeline`
+as `multi-modal-retrieval-pipeline` and `python -m multi_modal_retrieval_pipeline`.
 """
+
 import sys
 from pathlib import Path
 from typing import Any
